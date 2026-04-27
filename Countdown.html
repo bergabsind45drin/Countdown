@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Countdown</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    padding: 40px;
+    border-radius: 20px;
+    width: 420px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  }
+
+  h1 {
+    margin-bottom: 25px;
+    font-weight: 600;
+    color: #38bdf8;
+  }
+
+  .big {
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #f1f5f9;
+  }
+
+  .box {
+    margin: 15px 0;
+    font-size: 18px;
+    color: #cbd5f5;
+  }
+
+  .progress-container {
+    width: 100%;
+    height: 20px;
+    background: #1e293b;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 25px 0;
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    box-shadow: 0 0 15px #38bdf8;
+    transition: width 1s linear;
+  }
+
+  .percent {
+    font-size: 16px;
+    color: #94a3b8;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>Countdown bis 31.01.2027</h1>
+
+  <div class="big">
+    <span id="liveCountdown"></span>
+  </div>
+
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div class="percent">
+    Fortschritt: <span id="progressText"></span>
+  </div>
+
+  <div class="box">
+    Gesamttage: <span id="totalDays"></span>
+  </div>
+
+  <div class="box">
+    Arbeitstage: <span id="workDays"></span>
+  </div>
+</div>
+
+<script>
+const startDate = new Date("2024-12-01T00:00:00");
+const endDate = new Date("2027-01-31T23:59:59");
+
+function calculateDays() {
+  let totalDays = 0;
+  let workDays = 0;
+  let current = new Date(startDate);
+
+  while (current <= endDate) {
+    totalDays++;
+    let day = current.getDay();
+
+    if (day === 1 || day === 2 || day === 4 || day === 5) {
+      workDays++;
+    }
+
+    current.setDate(current.getDate() + 1);
+  }
+
+  document.getElementById("totalDays").textContent = totalDays;
+  document.getElementById("workDays").textContent = workDays;
+}
+
+function updateCountdown() {
+  const now = new Date();
+  const safeNow = now < startDate ? startDate : now;
+
+  const diff = endDate - now;
+
+  if (diff <= 0) {
+    document.getElementById("liveCountdown").textContent = "Fertig 🎉";
+    document.getElementById("progressBar").style.width = "100%";
+    return;
+  }
+
+  const totalDuration = endDate - startDate;
+  const passed = safeNow - startDate;
+  const percent = (passed / totalDuration) * 100;
+
+  document.getElementById("progressBar").style.width = percent + "%";
+  document.getElementById("progressText").textContent =
+    percent.toFixed(2) + " %";
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  document.getElementById("liveCountdown").textContent =
+    `${days} Tage ${hours}h ${minutes}m ${seconds}s`;
+}
+
+calculateDays();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+</script>
+
+</body>
+</html>
